@@ -20,10 +20,12 @@ jobs:
     steps:
     - name: Clone this repository
       uses: actions/checkout@v2
+      with:
+          path: mkhal
 
     - name: Build Docker images
       run: scripts/build_debian_docker_image -i ${{ env.DOCKER_ID}} -r mk-hal-cross-builder -t ${{ matrix.image_tag }}
-      working-directory: ${GITHUB_WORKSPACE}
+      working-directory: mkhal
 
     - name: Login to Docker Hub
       run: docker login -u ${{ env.DOCKER_ID }} -p ${{ secrets.DOCKER_TOKEN }}
