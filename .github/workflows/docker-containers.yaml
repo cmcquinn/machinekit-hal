@@ -3,7 +3,11 @@ name: Build Docker containers and push to Docker Hub
 on:
   push:
     branches:
-    - 'master'
+      - 'master'
+    paths:
+      - 'scripts/buildsystem/debian/multistrap-configs/**.conf'
+      - 'scripts/containers/buildsystem/debian/Dockerfile'
+      - 'scripts/build_debian_docker_image'
   pull_request:
     branches:
     - 'master'
