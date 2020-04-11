@@ -332,7 +332,7 @@ RUN test -z "$SYS_ROOT" \
     }
 
 # - Fix broken symlinks in $SYS_ROOT/usr/lib/arm-linux-gnueabihf/pkgconfig
-RUN pkg-config libzmq \
+RUN test -z $(pkg-config --print-errors libzmq | grep "not found")\
     || { \
         cd $SYS_ROOT/usr/lib/arm-linux-gnueabihf/pkgconfig && \
         for f in $(ls mit-krb5); do ln -sf mit-krb5/$f $f; done \
