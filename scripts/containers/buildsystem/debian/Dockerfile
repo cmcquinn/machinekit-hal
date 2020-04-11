@@ -331,6 +331,13 @@ RUN test -z "$SYS_ROOT" \
 	    /usr/lib/${HOST_MULTIARCH}; \
     }
 
+# - Fix broken symlinks in $SYS_ROOT/usr/lib/arm-linux-gnueabihf/pkgconfig
+RUN pkg-config libzmq \
+    || { \
+        cd $SYS_ROOT/usr/lib/arm-linux-gnueabihf/pkgconfig && \
+        for f in $(ls mit-krb5); do ln -sf mit-krb5/$f $f; done \
+    }
+
 # - Link `xeno-config` to where autoconf can find it
 RUN test -z "$SYS_ROOT" -o $DISTRO_VER -gt 8 || \
     ln -s /sysroot/usr/bin/xeno-config /usr/bin/
