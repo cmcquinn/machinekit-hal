@@ -9,8 +9,35 @@ on:
     - 'master'
 
 jobs:
+  buildDockerContainers:
+    runs-on: "ubuntu-latest"
+    if: test -n $(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -e Dockerfile -e "scripts/buildsystem/debian" -e build_debian_docker_image)
+    env:
+      DOCKER_ID: 'cmcquinn'
+      IMAGE_NAME: 'mk-hal-cross-builder'
+    strategy:
+      matrix:
+        image_tag: [amd64_8, amd64_9, amd64_10, arm64_9, arm64_10, armhf_8, armhf_9, armhf_10, i386_8, i386_9, i386_10]
+
+    steps:
+    - name: Clone this repository
+      uses: actions/checkout@v2
+      with:
+          path: mkhal
+
+    - name: Build Docker images
+      run: scripts/build_debian_docker_image -i ${{ env.DOCKER_ID}} -r ${{ env.IMAGE_NAME }} -t ${{ matrix.image_tag }}
+      working-directory: mkhal
+
+    - name: Login to Docker Hub
+      run: docker login -u ${{ env.DOCKER_ID }} -p ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Push images to Docker Hub
+      run: docker push ${{ env.DOCKER_ID }}/${{ env.IMAGE_NAME }}:${{ matrix.image_tag }}
+        
   testMachinekitHAL:
     runs-on: ubuntu-latest
+    needs: buildDockerContainers
     env:
       IMAGE: 'eryaf/mk-cross-builder'
     strategy:
