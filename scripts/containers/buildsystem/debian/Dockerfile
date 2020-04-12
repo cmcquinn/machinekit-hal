@@ -332,10 +332,11 @@ RUN test -z "$SYS_ROOT" \
     }
 
 # - Fix broken symlinks in $SYS_ROOT/usr/lib/arm-linux-gnueabihf/pkgconfig
-RUN test -z $(pkg-config --print-errors libzmq | grep "not found")\
+RUN test -z $(pkg-config --print-errors --errors-to-stdout libzmq | grep -c "not found") \
     || { \
         cd $SYS_ROOT/usr/lib/arm-linux-gnueabihf/pkgconfig && \
-        for f in $(ls mit-krb5); do ln -sf mit-krb5/$f $f; done \
+        echo "Fixing symlinks" && \
+        for f in $(ls mit-krb5 | grep "\.pc"); do ln -sf mit-krb5/$f $f; done; \
     }
 
 # - Link `xeno-config` to where autoconf can find it
