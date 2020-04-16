@@ -331,10 +331,11 @@ RUN test -z "$SYS_ROOT" \
 	    /usr/lib/${HOST_MULTIARCH}; \
     }
 
-# - Fix broken symlinks in $SYS_ROOT/usr/lib/arm-linux-gnueabihf/pkgconfig
-RUN test -z $(pkg-config --print-errors --errors-to-stdout libzmq | grep -c "not found") \
+# - Fix broken symlinks in $SYS_ROOT/usr/lib/${HOST_MULTIARCH}/pkgconfig
+RUN test -z "$SYS_ROOT" \
+    || pkg-config libzmq \ 
     || { \
-        cd $SYS_ROOT/usr/lib/arm-linux-gnueabihf/pkgconfig && \
+        cd $SYS_ROOT/usr/lib/${HOST_MULTIARCH}/pkgconfig && \
         echo "Fixing symlinks" && \
         for f in $(ls mit-krb5 | grep "\.pc"); do ln -sf mit-krb5/$f $f; done; \
     }
