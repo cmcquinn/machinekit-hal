@@ -335,7 +335,7 @@ RUN test -z "$SYS_ROOT" \
 
 # - Fix broken symlinks in $SYS_ROOT/usr/lib/${HOST_MULTIARCH}/pkgconfig
 RUN test -z "$SYS_ROOT" \
-    || pkg-config libzmq \ 
+    || pkg-config libzmq \
     || { \
         cd $SYS_ROOT/usr/lib/${HOST_MULTIARCH}/pkgconfig && \
         echo "Fixing symlinks" && \
